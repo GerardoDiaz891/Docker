@@ -81,7 +81,6 @@
         <button
           type="submit"
           class="w-full mt-4 bg-gradient-to-r from-emerald-400 to-emerald-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-emerald-500 hover:to-emerald-700 transition-all shadow-lg hover:shadow-emerald-500/20"
-          :disabled="!recaptchaToken"
         >
           Enviar mensaje
           <svg class="w-4 h-4 inline ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
