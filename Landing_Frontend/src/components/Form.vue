@@ -126,7 +126,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import { useContactStore } from '@/stores/contactStore'
 import * as yup from 'yup'
 
