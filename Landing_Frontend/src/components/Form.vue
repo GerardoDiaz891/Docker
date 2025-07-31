@@ -76,11 +76,9 @@
         </div>
 
         <!-- Componente Recaptcha desde vue3-recaptcha-v2 -->
-        <RecaptchaV2
+        <recaptcha-v2
           ref="recaptchaRef"
           @verify="onVerify"
-          theme="light"
-          size="normal"
           @expired="() => {
             console.log('reCAPTCHA expirado, token limpiado')
             recaptchaToken.value = ''
@@ -130,9 +128,6 @@
 import { reactive, ref, onMounted } from 'vue'
 import { useContactStore } from '@/stores/contactStore'
 import * as yup from 'yup'
-
-// Importa el componente RecaptchaV2
-import { RecaptchaV2 } from 'vue3-recaptcha-v2'
 
 const contactSchema = yup.object({
   name: yup.string().required('El nombre es obligatorio').transform((val: string) => val.trim()).min(3, 'Mínimo 3 caracteres'),
