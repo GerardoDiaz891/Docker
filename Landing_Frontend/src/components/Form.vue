@@ -84,6 +84,7 @@
             console.log('reCAPTCHA expirado, token limpiado')
             recaptchaToken.value = ''
           }"
+          @error="(e) => { console.error('Error recaptcha:', e) }"
         />
 
         <button
@@ -158,6 +159,10 @@ const errors = reactive({
 const showModal = ref(false)
 const recaptchaToken = ref('')
 const recaptchaRef = ref(null)
+
+onMounted(() => {
+  console.log('[Mounted] El componente se montó.')
+})
 
 const onVerify = (token: string) => {
   console.log('[onVerify] Token recibido:', token)
