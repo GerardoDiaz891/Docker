@@ -76,12 +76,18 @@
         </div>
 
         <!-- Componente Recaptcha desde vue3-recaptcha-v2 -->
-        <RecaptchaV2 @verify="onVerify" />
+        <RecaptchaV2
+          :sitekey="siteKey"
+          ref="recaptchaRef"
+          @verify="onVerify"
+          theme="light"
+          size="normal"
+          @error="(e: EventListener) => { console.error('Error recaptcha:', e) }"
+        />
 
         <button
           type="submit"
           class="w-full mt-4 bg-gradient-to-r from-emerald-400 to-emerald-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-emerald-500 hover:to-emerald-700 transition-all shadow-lg hover:shadow-emerald-500/20"
-          :disabled="!recaptchaToken"
         >
           Enviar mensaje
           <svg class="w-4 h-4 inline ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -118,7 +124,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import { useContactStore } from '@/stores/contactStore'
 import * as yup from 'yup'
 
@@ -148,19 +154,25 @@ const errors = reactive({
   message: '',
 })
 
+const siteKey = '6LcUZmsrAAAAAED4P8m9xlzAJ7Z7G-TRlqy16rc4'
+
 const showModal = ref(false)
 const recaptchaToken = ref('')
+const recaptchaRef = ref(null)
 
 const onVerify = (token: string) => {
+  console.log('[onVerify] Token recibido:', token)
   recaptchaToken.value = token
 }
 
 const handleSubmit = async () => {
+  console.log('[handleSubmit] Token actual:', recaptchaToken.value)
   try {
     await contactSchema.validate(form, { abortEarly: false })
     Object.keys(errors).forEach((key) => (errors[key as keyof typeof errors] = ''))
 
     await contactStore.addContact({ ...form, token: recaptchaToken.value })
+    console.log('[handleSubmit] Error en store:', contactStore.error)
 
     if (!contactStore.error) {
       alert('Mensaje enviado con éxito.')
