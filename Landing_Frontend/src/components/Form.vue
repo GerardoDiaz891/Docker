@@ -81,7 +81,6 @@
           @verify="onVerify"
           theme="light"
           size="normal"
-          @verify="onVerify"
           @expired="() => {
             console.log('reCAPTCHA expirado, token limpiado')
             recaptchaToken.value = ''
