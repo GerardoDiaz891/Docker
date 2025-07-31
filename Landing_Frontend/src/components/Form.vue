@@ -39,9 +39,7 @@
             class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-transparent transition"
             placeholder="+1234567890"
           />
-          <p v-if="errors.phone" class="text-amber-300 text-sm mt-2">
-            {{ errors.phone }}
-          </p>
+          <p v-if="errors.phone" class="text-amber-300 text-sm mt-2">{{ errors.phone }}</p>
         </div>
 
         <div>
@@ -77,8 +75,12 @@
           </label>
         </div>
 
-        <!--Recaptcha-->
-        <div class="g-recaptcha" data-sitekey="6LcUZmsrAAAAAED4P8m9xlzAJ7Z7G-TRlqy16rc4"></div>
+        <!-- Recaptcha -->
+        <div
+          v-if="recaptchaLoaded"
+          class="g-recaptcha"
+          data-sitekey="6LcUZmsrAAAAAED4P8m9xlzAJ7Z7G-TRlqy16rc4"
+        ></div>
 
         <button
           type="submit"
@@ -119,32 +121,16 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import { useContactStore } from '@/stores/contactStore'
 import * as yup from 'yup'
 
 // Validaciones y sanitización
 const contactSchema = yup.object({
-  name: yup
-    .string()
-    .required('El nombre es obligatorio')
-    .transform((val: string) => val.trim())
-    .min(3, 'Mínimo 3 caracteres'),
-  email: yup
-    .string()
-    .required('El correo es obligatorio')
-    .email('Correo inválido')
-    .transform((val: string) => val.trim().toLowerCase()),
-  phone: yup
-    .string()
-    .required('El teléfono es obligatorio')
-    .transform((val: string) => val.replace(/\D/g, ''))
-    .matches(/^[0-9]{7,15}$/, 'El teléfono debe tener entre 7 y 15 dígitos'),
-  message: yup
-    .string()
-    .required('El mensaje es obligatorio')
-    .transform((val: string) => val.trim())
-    .min(10, 'Mínimo 10 caracteres'),
+  name: yup.string().required('El nombre es obligatorio').transform((val: string) => val.trim()).min(3, 'Mínimo 3 caracteres'),
+  email: yup.string().required('El correo es obligatorio').email('Correo inválido').transform((val: string) => val.trim().toLowerCase()),
+  phone: yup.string().required('El teléfono es obligatorio').transform((val: string) => val.replace(/\D/g, '')).matches(/^[0-9]{7,15}$/, 'El teléfono debe tener entre 7 y 15 dígitos'),
+  message: yup.string().required('El mensaje es obligatorio').transform((val: string) => val.trim()).min(10, 'Mínimo 10 caracteres'),
 })
 
 const contactStore = useContactStore()
@@ -164,23 +150,30 @@ const errors = reactive({
 })
 
 const showModal = ref(false)
+const recaptchaLoaded = ref(false)
+
+onMounted(() => {
+  const checkRecaptchaReady = setInterval(() => {
+    if ((window as any).grecaptcha) {
+      recaptchaLoaded.value = true
+      clearInterval(checkRecaptchaReady)
+    }
+  }, 300)
+})
 
 declare const grecaptcha: any
 
 const handleSubmit = async () => {
   try {
-    // Validar con Yup
     await contactSchema.validate(form, { abortEarly: false })
-    Object.keys(errors).forEach((key) => (errors[key as keyof typeof errors] = '')) // Limpiar errores
+    Object.keys(errors).forEach((key) => (errors[key as keyof typeof errors] = ''))
 
-    // Validar reCAPTCHA
     const recaptchaToken = (window as any).grecaptcha.getResponse()
     if (!recaptchaToken) {
       alert('Por favor verifica que no eres un robot.')
       return
     }
 
-    // Enviar
     await contactStore.addContact({ ...form, token: recaptchaToken })
 
     if (!contactStore.error) {
