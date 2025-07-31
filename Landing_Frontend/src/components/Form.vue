@@ -154,6 +154,7 @@ const showModal = ref(false)
 const recaptchaToken = ref('')
 
 const onVerify = (token: string) => {
+  console.log('[Recaptcha Verificado]', token)
   recaptchaToken.value = token
 }
 
