@@ -7,9 +7,10 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://landingfrontend-production.up.railway.app",
   "http://137.184.58.132",
-  "http://137.184.58.132:3157",  // <- ESTE DEBE ESTAR
-  "http://137.184.58.132:3168"
-
+  "http://137.184.58.132:3157",
+  "http://137.184.58.132:3168",
+  "http://159.223.139.91:5173",
+  "https://diazalvar.site"
 ];
 
 // Middleware CORS configurado ANTES de cualquier otra ruta o middleware
