@@ -12,8 +12,7 @@ const contactSchema = joi.object({
     .string()
     .pattern(/^[0-9]{7,15}$/)
     .required(),
-  message: joi.string().min(5).max(500).required(),
-  token: joi.string().required(),
+  message: joi.string().min(5).max(500).required()
 });
 
 // Función para registrar contacto
@@ -21,8 +20,7 @@ exports.createContactService = async ({
   name,
   email,
   phone,
-  message,
-  token,
+  message
 }) => {
   // Sanitizar entradas
   const cleanName = validator.escape(validator.trim(name));
@@ -35,8 +33,7 @@ exports.createContactService = async ({
     name: cleanName,
     email: cleanEmail,
     phone: cleanPhone,
-    message: cleanMessage,
-    token,
+    message: cleanMessage
   });
 
   if (error) {
@@ -45,24 +42,24 @@ exports.createContactService = async ({
     throw err;
   }
 
-  // Validar token reCAPTCHA
-  const secretKey = process.env.RECAPTCHA_SECRET_KEY;
-  const response = await axios.post(
-    "https://www.google.com/recaptcha/api/siteverify",
-    null,
-    {
-      params: {
-        secret: secretKey,
-        response: token,
-      },
-    }
-  );
+// Validar token reCAPTCHA
+//   const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+//   const response = await axios.post(
+//     "https://www.google.com/recaptcha/api/siteverify",
+//     null,
+//     {
+//       params: {
+//         secret: secretKey,
+//         response: token,
+//       },
+//     }
+//   );
 
-  if (!response.data.success) {
-    const err = new Error("Verificación reCAPTCHA fallida");
-    err.status = 403;
-    throw err;
-  }
+//   if (!response.data.success) {
+//     const err = new Error("Verificación reCAPTCHA fallida");
+//     err.status = 403;
+//     throw err;
+//   }
 
   // Guardar en base de datos con async/await y promesas nativas
   const sql =
