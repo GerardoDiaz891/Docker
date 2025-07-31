@@ -160,11 +160,6 @@ const handleSubmit = async () => {
     await contactSchema.validate(form, { abortEarly: false })
     Object.keys(errors).forEach((key) => (errors[key as keyof typeof errors] = ''))
 
-    if (!recaptchaToken.value) {
-      alert('Por favor verifica que no eres un robot.')
-      return
-    }
-
     await contactStore.addContact({ ...form, token: recaptchaToken.value })
 
     if (!contactStore.error) {
