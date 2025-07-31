@@ -156,6 +156,7 @@ const onVerify = (token: string) => {
 }
 
 const handleSubmit = async () => {
+  console.log('Submit ejecutado')
   try {
     await contactSchema.validate(form, { abortEarly: false })
     Object.keys(errors).forEach((key) => (errors[key as keyof typeof errors] = ''))
@@ -165,7 +166,9 @@ const handleSubmit = async () => {
       return
     }
 
+    console.log('[handleSubmit] Enviando formulario:', form)
     await contactStore.addContact({ ...form, token: recaptchaToken.value })
+    console.log('[handleSubmit] Error en store:', contactStore.error)
 
     if (!contactStore.error) {
       alert('Mensaje enviado con éxito.')
