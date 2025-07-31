@@ -9,7 +9,7 @@ services:
       - ./Landing_Frontend:/app
       - /app/node_modules
     environment:
-      - VITE_API_URL=http://localhost:3001
+      - VITE_API_URL=https://diazalvar.site/api
     depends_on:
       - backend
 
@@ -23,6 +23,10 @@ services:
       - DB_USER=root
       - DB_PASSWORD=root
       - DB_NAME=landing_contact
+      - PORT=3000
+      - JWT_SECRET=clave_secreta_873465
+      - RECAPTCHA_SECRET_KEY=6LcUZmsrAAAAAKqbQe2LTtcTSsP88zjMxz5qBiOH
+      - SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
     depends_on:
       db:
         condition: service_healthy
