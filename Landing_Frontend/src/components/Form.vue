@@ -75,16 +75,13 @@
           </label>
         </div>
 
-        <!-- Recaptcha -->
-        <div
-          v-if="recaptchaLoaded"
-          class="g-recaptcha"
-          data-sitekey="6LcUZmsrAAAAAED4P8m9xlzAJ7Z7G-TRlqy16rc4"
-        ></div>
+        <!-- Componente Recaptcha desde vue3-recaptcha-v2 -->
+        <RecaptchaV2 @verify="onVerify" />
 
         <button
           type="submit"
           class="w-full mt-4 bg-gradient-to-r from-emerald-400 to-emerald-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-emerald-500 hover:to-emerald-700 transition-all shadow-lg hover:shadow-emerald-500/20"
+          :disabled="!recaptchaToken"
         >
           Enviar mensaje
           <svg class="w-4 h-4 inline ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -121,11 +118,13 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref } from 'vue'
 import { useContactStore } from '@/stores/contactStore'
 import * as yup from 'yup'
 
-// Validaciones y sanitización
+// Importa el componente RecaptchaV2
+import { RecaptchaV2 } from 'vue3-recaptcha-v2'
+
 const contactSchema = yup.object({
   name: yup.string().required('El nombre es obligatorio').transform((val: string) => val.trim()).min(3, 'Mínimo 3 caracteres'),
   email: yup.string().required('El correo es obligatorio').email('Correo inválido').transform((val: string) => val.trim().toLowerCase()),
@@ -150,36 +149,28 @@ const errors = reactive({
 })
 
 const showModal = ref(false)
-const recaptchaLoaded = ref(false)
+const recaptchaToken = ref('')
 
-onMounted(() => {
-  const checkRecaptchaReady = setInterval(() => {
-    if ((window as any).grecaptcha) {
-      recaptchaLoaded.value = true
-      clearInterval(checkRecaptchaReady)
-    }
-  }, 300)
-})
-
-declare const grecaptcha: any
+const onVerify = (token: string) => {
+  recaptchaToken.value = token
+}
 
 const handleSubmit = async () => {
   try {
     await contactSchema.validate(form, { abortEarly: false })
     Object.keys(errors).forEach((key) => (errors[key as keyof typeof errors] = ''))
 
-    const recaptchaToken = (window as any).grecaptcha.getResponse()
-    if (!recaptchaToken) {
+    if (!recaptchaToken.value) {
       alert('Por favor verifica que no eres un robot.')
       return
     }
 
-    await contactStore.addContact({ ...form, token: recaptchaToken })
+    await contactStore.addContact({ ...form, token: recaptchaToken.value })
 
     if (!contactStore.error) {
       alert('Mensaje enviado con éxito.')
       Object.assign(form, { name: '', email: '', phone: '', message: '' })
-      grecaptcha.reset()
+      recaptchaToken.value = ''
     } else {
       alert(contactStore.error)
     }
