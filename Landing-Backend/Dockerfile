@@ -1,6 +1,6 @@
 # Dockerfile en Landing_Backend/
 
-FROM node:18
+FROM node:20-alpine
 
 # Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
@@ -15,7 +15,7 @@ RUN npm install
 COPY . .
 
 # Expone el puerto en el que corre la app
-EXPOSE 3168
+EXPOSE 3000
 
 # Comando para iniciar la app
 CMD ["npm", "run", "dev"]

@@ -1,5 +1,5 @@
 # Imagen base oficial de Node.js
-FROM node:18-alpine
+FROM node:20-alpine
 
 # Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Expone el puerto de Vite (por defecto 5173)
-EXPOSE 3157
+EXPOSE 5173
 
 # Inicia Vite en modo desarrollo (usa VITE_API_URL del .env)
 CMD ["npm", "run", "dev"]
