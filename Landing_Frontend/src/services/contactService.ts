@@ -6,7 +6,9 @@ export const getContacts = async () => {
 }
 
 export const createContact = async (data: any) => {
+  console.log('[createContact] Enviando datos:', data)
   const response = await genericRequest('/contacts', 'POST', data)
+  console.log('[createContact] Respuesta:', response)
   return response
 }
 
