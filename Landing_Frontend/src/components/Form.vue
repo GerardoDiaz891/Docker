@@ -76,7 +76,10 @@
         </div>
 
         <!-- Componente Recaptcha desde vue3-recaptcha-v2 -->
-        <RecaptchaV2 @verify="onVerify" />
+        <RecaptchaV2
+          siteKey="6LcUZmsrAAAAAED4P8m9xlzAJ7Z7G-TRlqy16rc4"
+          @verify="onVerify"
+        />
 
         <button
           type="submit"
