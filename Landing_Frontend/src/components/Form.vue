@@ -77,8 +77,13 @@
 
         <!-- Componente Recaptcha desde vue3-recaptcha-v2 -->
         <RecaptchaV2
+          ref="recaptchaRef"
           siteKey="6LcUZmsrAAAAAED4P8m9xlzAJ7Z7G-TRlqy16rc4"
           @verify="onVerify"
+          @expired="() => {
+            console.log('reCAPTCHA expirado, token limpiado')
+            recaptchaToken.value = ''
+          }"
         />
 
         <button
@@ -152,13 +157,15 @@ const errors = reactive({
 
 const showModal = ref(false)
 const recaptchaToken = ref('')
+const recaptchaRef = ref(null)
 
 const onVerify = (token: string) => {
+  console.log('[onVerify] Token recibido:', token)
   recaptchaToken.value = token
 }
 
 const handleSubmit = async () => {
-  console.log('Submit ejecutado')
+  console.log('[handleSubmit] Token actual:', recaptchaToken.value)
   try {
     await contactSchema.validate(form, { abortEarly: false })
     Object.keys(errors).forEach((key) => (errors[key as keyof typeof errors] = ''))
@@ -175,6 +182,7 @@ const handleSubmit = async () => {
     if (!contactStore.error) {
       alert('Mensaje enviado con éxito.')
       Object.assign(form, { name: '', email: '', phone: '', message: '' })
+      recaptchaRef.value?.reset()
       recaptchaToken.value = ''
     } else {
       alert(contactStore.error)
